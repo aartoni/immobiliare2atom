@@ -1,0 +1,16 @@
+[package]
+name = "immobiliare2atom"
+version = "0.1.0"
+edition = "2021"
+authors = ["Alessio Artoni <alessio@artoni.org>"]
+repository = "https://github.com/aartoni/ebay2atom/"
+license = "MIT"
+readme = "README.md"
+keywords = ["atom", "feed"]
+categories = ["command-line-utilities"]
+
+[dependencies]
+atom_syndication = "0.12.1"
+chrono = "0.4.24"
+regex = "1.7.3"
+scraper = "0.16.0"
