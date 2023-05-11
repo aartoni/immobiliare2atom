@@ -28,8 +28,9 @@ const FLOOR_QUERY: &str = "li[aria-label=piano]";
 const AGENCY_QUERY: &str = ".nd-figure__content";
 const DESCRIPTION_QUERY: &str = ".in-realEstateListCard__descriptionShort";
 const SCAM_AGENCIES: &'static [&str] = &[
-    "Trova Affitto Parma",
     "Affitto Privato Parma",
+    "Agenzia Informazione Casa di Dott.ssa Savi Daniela",
+    "Trova Affitto Parma",
 ];
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
