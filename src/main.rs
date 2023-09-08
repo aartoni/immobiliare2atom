@@ -46,7 +46,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let feed_title = feed_title_input.text().next().unwrap();
 
     // Get feed link
-    let link_regex = Regex::new("(https://.*)&amp;mode=rss")?;
+    let link_regex = Regex::new("(https://\\S*)&amp;mode=rss")?;
     let feed_link = link_regex.captures(&html).unwrap().get(1).unwrap().as_str();
 
     // Get generator
