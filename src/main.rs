@@ -26,7 +26,7 @@ const SURFACE_QUERY: &str = "li[aria-label=superficie]";
 const BATHROOMS_QUERY: &str = "li[aria-label=bagno]";
 const FLOOR_QUERY: &str = "li[aria-label=piano]";
 const AGENCY_QUERY: &str = ".nd-figure__content";
-const DESCRIPTION_QUERY: &str = ".in-realEstateListCard__descriptionShort";
+const DESCRIPTION_QUERY: &str = ".in-realEstateListCard__description";
 const SCAM_AGENCIES: &'static [&str] = &[
     "Affitto Privato Parma",
     "Agenzia Informazione Casa di Dott.ssa Savi Daniela",
