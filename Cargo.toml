@@ -10,7 +10,7 @@ keywords = ["atom", "feed"]
 categories = ["command-line-utilities"]
 
 [dependencies]
-atom_syndication = "0.12.1"
-chrono = "0.4.24"
-regex = "1.7.3"
-scraper = "0.16.0"
+atom_syndication = "0.12.2"
+chrono = "0.4.30"
+regex = "1.9.5"
+scraper = "0.17.1"
