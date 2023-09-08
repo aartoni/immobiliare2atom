@@ -20,7 +20,7 @@ const SEARCH_RESULTS: usize = 25;
 const FEED_TITLE_QUERY: &str = "title";
 const ITEMS_QUERY: &str = ".in-realEstateListCard";
 const TITLE_QUERY: &str = ".in-card__title";
-const PRICE_QUERY: &str = ".in-realEstateListCard__features--main";
+const PRICE_QUERY: &str = ".in-realEstateListCard__priceOnTop";
 const ROOMS_QUERY: &str = "li[aria-label=locali]";
 const SURFACE_QUERY: &str = "li[aria-label=superficie]";
 const BATHROOMS_QUERY: &str = "li[aria-label=bagno]";
