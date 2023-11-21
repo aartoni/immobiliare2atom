@@ -1,9 +1,9 @@
 [package]
 name = "immobiliare2atom"
-version = "0.1.0"
+version = "1.0.0"
 edition = "2021"
 authors = ["Alessio Artoni <alessio@artoni.org>"]
-repository = "https://github.com/aartoni/ebay2atom/"
+repository = "https://github.com/aartoni/immobiliare2atom/"
 license = "MIT"
 readme = "README.md"
 keywords = ["atom", "feed"]
@@ -12,5 +12,5 @@ categories = ["command-line-utilities"]
 [dependencies]
 atom_syndication = "0.12.2"
 chrono = "0.4.30"
-regex = "1.9.5"
-scraper = "0.17.1"
+reqwest = { version = "0.11", features = ["blocking", "json"] }
+serde = { version = "1.0.192", features = ["derive"] }
