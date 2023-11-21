@@ -1,15 +1,17 @@
 use core::fmt::Write;
 use std::{
-    io::{self, Read},
-    time::SystemTime,
+    env,
+    io::{self},
+    time::SystemTime
 };
 
 use atom_syndication::{
     Content, Entry, FeedBuilder, GeneratorBuilder, LinkBuilder, TextBuilder, TextType, WriteConfig,
 };
 use chrono::{DateTime, Local};
-use regex::Regex;
-use scraper::{Html, Selector};
+
+mod types;
+use types::ImmobiliareResponse;
 
 // Manifest environment variables
 const VERSION: &str = env!("CARGO_PKG_VERSION");
@@ -17,37 +19,27 @@ const REPOSITORY: &str = env!("CARGO_PKG_REPOSITORY");
 const NAME: &str = env!("CARGO_PKG_NAME");
 
 // Immobiliare.it constants
-const SEARCH_RESULTS: usize = 25;
-const FEED_TITLE_QUERY: &str = "title";
-const ITEMS_QUERY: &str = ".in-reListCard";
-const TITLE_QUERY: &str = ".in-reListCard__title";
-const PRICE_QUERY: &str = ".in-reListCardPrice";
-const ROOMS_QUERY: &str = "li[aria-label=locali]";
-const SURFACE_QUERY: &str = "li[aria-label=superficie]";
-const BATHROOMS_QUERY: &str = "li[aria-label=bagno]";
-const FLOOR_QUERY: &str = "li[aria-label=piano]";
-const AGENCY_QUERY: &str = ".nd-figure__content";
-const DESCRIPTION_QUERY: &str = ".in-reListCardDescription";
 const SCAM_AGENCIES: &[&str] = &[
     "Affitto Privato Parma",
     "Agenzia Informazione Casa di Dott.ssa Savi Daniela",
     "Trova Affitto Parma",
 ];
 
+fn help() {
+    eprintln!("Usage: immobiliare2atom [URL]\nGenerates an atom feed for the specified URL.");
+    std::process::exit(2);
+}
+
 fn main() -> Result<(), Box<dyn std::error::Error>> {
-    // Get document
-    let mut html = String::new();
-    io::stdin().read_to_string(&mut html)?;
-    let document = Html::parse_document(&html);
+    let args: Vec<String> = env::args().collect();
 
-    // Get feed data
-    let feed_title_selector = Selector::parse(FEED_TITLE_QUERY)?;
-    let feed_title_input = document.select(&feed_title_selector).next().unwrap();
-    let feed_title = feed_title_input.text().next().unwrap();
+    // Check arguments number
+    if args.len() < 2 {
+        help();
+    }
 
-    // Get feed link
-    let link_regex = Regex::new("(https://\\S*)&amp;mode=rss")?;
-    let feed_link = link_regex.captures(&html).unwrap().get(1).unwrap().as_str();
+    let url = args.get(1).unwrap();
+    let response = reqwest::blocking::get(url)?.json::<ImmobiliareResponse>()?;
 
     // Get generator
     let generator = GeneratorBuilder::default()
@@ -60,13 +52,13 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let feed_link = LinkBuilder::default()
         .rel("alternate".to_owned())
         .mime_type(Some("text/html".to_owned()))
-        .href(feed_link.to_owned())
+        .href(url.to_owned())
         .build();
 
     // Get title
     let feed_title = TextBuilder::default()
         .r#type(TextType::Text)
-        .value(feed_title.to_owned())
+        .value(response.seo_data.title)
         .build();
 
     // Get local DateTime
@@ -80,96 +72,74 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         .updated(update_time)
         .build();
 
-    // Get item selectors and regexes
-    let agency_selector = Selector::parse(AGENCY_QUERY)?;
-    let title_selector = Selector::parse(TITLE_QUERY)?;
-    let price_selector = Selector::parse(PRICE_QUERY)?;
-    let rooms_selector = Selector::parse(ROOMS_QUERY)?;
-    let surface_selector = Selector::parse(SURFACE_QUERY)?;
-    let bathrooms_selector = Selector::parse(BATHROOMS_QUERY)?;
-    let floor_selector = Selector::parse(FLOOR_QUERY)?;
-    let description_selector = Selector::parse(DESCRIPTION_QUERY)?;
-    let items_selector = Selector::parse(ITEMS_QUERY)?;
-
     // Store the entries array
-    let mut entries: Vec<Entry> = Vec::with_capacity(SEARCH_RESULTS);
+    let mut entries: Vec<Entry> = Vec::with_capacity(response.results.len());
 
     // Parse feed items
-    for item in document.select(&items_selector) {
+    for result in response.results {
         let mut entry = Entry::default();
         let mut content = Content::default();
         content.set_content_type(Some("xhtml".to_owned()));
         let mut description = r#"<div xmlns="http://www.w3.org/1999/xhtml">"#.to_owned();
 
         // Get estate agency
-        if let Some(agency) = item.select(&agency_selector).next() {
-            let agency = agency.value().attr("alt").unwrap();
-
-            if SCAM_AGENCIES.contains(&agency) {
+        if let Some(agency) = result.real_estate.advertiser.agency {
+            let agency = agency.display_name;
+            if SCAM_AGENCIES.contains(&agency.as_str()) {
                 continue;
             }
 
-            if !agency.is_empty() {
-                write!(description, "<p>Agenzia: {agency}</p>")?;
-            }
+            write!(description, "<p>Agenzia: {agency}</p>")?;
         }
 
         // Get title
-        let title_element = item.select(&title_selector).next().unwrap();
-        let title = title_element.text().last().unwrap();
-        entry.set_title(title);
+        entry.set_title(result.real_estate.title);
 
         // Get link/id
-        let item_url = title_element.value().attr("href").unwrap();
+        let item_url = result.seo.url;
 
         let link = LinkBuilder::default()
             .rel("alternate".to_owned())
             .mime_type(Some("text/html".to_owned()))
-            .href(item_url.to_owned())
+            .href(item_url.clone())
             .build();
 
         entry.set_links([link]);
         entry.set_id(item_url);
 
         // Get price
-        let price = item
-            .select(&price_selector)
-            .next()
-            .unwrap()
-            .text()
-            .next()
-            .unwrap();
-
+        let price = result.real_estate.price.formatted_value;
         write!(description, "<p>Prezzo: {price}</p>")?;
 
-        // Get number of rooms
-        if let Some(rooms) = item.select(&rooms_selector).next() {
-            let rooms = rooms.text().next().unwrap();
+        // Get properties
+        if let Some(properties) = result.real_estate.properties.first() {
+            // Get number of rooms
+            let rooms = &properties.rooms;
             write!(description, "<p>Locali: {rooms}</p>")?;
-        }
 
-        // Get surface
-        if let Some(surface) = item.select(&surface_selector).next() {
-            let surface = surface.text().next().unwrap();
+            // Get surface
+            let surface = &properties.surface;
             write!(description, "<p>Superficie: {surface}</p>")?;
-        }
 
-        // Get bathrooms
-        if let Some(bathrooms) = item.select(&bathrooms_selector).next() {
-            let bathrooms = bathrooms.text().next().unwrap();
-            write!(description, "<p>Bagni: {bathrooms}</p>")?;
-        }
+            // Get bathrooms
+            if let Some(bathrooms) = properties
+                .bathrooms
+                .as_ref()
+                .or(properties.ga4_bathrooms.as_ref())
+            {
+                write!(description, "<p>Bagni: {bathrooms}</p>")?;
+            }
 
-        // Get floor
-        if let Some(floor) = item.select(&floor_selector).next() {
-            let floor = floor.text().next().unwrap();
-            write!(description, "<p>Piano: {floor}</p>")?;
-        }
+            // Get floor
+            if let Some(floor) = &properties.floor {
+                let floor = &floor.value;
+                write!(description, "<p>Piano: {floor}</p>")?;
+            }
 
-        // Get description
-        if let Some(desc) = item.select(&description_selector).next() {
-            let desc = desc.text().next().unwrap();
-            write!(description, "<p>{desc}</p>")?;
+            // Get description
+            if let Some(desc) = &properties.description {
+                write!(description, "<p>{desc}</p>")?;
+            }
         }
 
         // Finish and append entry
