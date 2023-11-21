@@ -38,8 +38,12 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         help();
     }
 
+    // Perform request
     let url = args.get(1).unwrap();
-    let response = reqwest::blocking::get(url)?.json::<ImmobiliareResponse>()?;
+    let response = ureq::get(&url).call()?.into_string()?;
+
+    // Parse response
+    let response: ImmobiliareResponse = serde_json::from_str(&response)?;
 
     // Get generator
     let generator = GeneratorBuilder::default()
