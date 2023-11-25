@@ -1,20 +1,18 @@
 # immobiliare2atom
 
-`immobiliare2atom` is a [Newsboat](https://newsboat.org/) filter script to generate Atom feeds from Immobiliare.it searches. The project is based on [`ebay2atom`](https://github.com/aartoni/ebay2atom), a Rust script that generates an Atom feed from eBay searches.
+`immobiliare2atom` generates Atom feeds from Immobiliare.it searches. The project is based on [`ebay2atom`](https://github.com/aartoni/ebay2atom), a Rust script that generates an Atom feed from eBay searches.
 
-## Compilation
+## Installation
 
-Customize the script as needed, then compile in release mode as follows.
+Clone, the project, customize the script as needed, then install as follows.
 
 ```sh
-cargo build --release
+cargo install --path .
 ```
-
-The executable can be found in `./target/release/immobiliare2atom`
 
 ## Usage
 
-The filter script can be directly invoked from the Newsboat `urls` configuration file.
+The program can be directly invoked from the Newsboat `urls` configuration file.
 
     # Example query
-    filter:~/.local/bin/immobiliare2atom:https://www.immobiliare.it/affitto-case/roma/?criterio=dataModifica&ordine=desc "~Immobiliare.it (affitto a Roma)"
+    "exec:immobiliare2atom \"https://www.immobiliare.it/api-next/search-list/real-estates/?fkRegione=xyz&idProvincia=XY&idComune=1234&idMZona[0]=123&idMZona[1]=321&idQuartiere[0]=1234&idNazione=IT&idContratto=1&idCategoria=1&prezzoMassimo=125000&superficieMinima=60&localiMinimo=3&criterio=dataModifica&ordine=desc&__lang=it&path=/vendita-case/monopoli/\"" "~Case in vendita a Monopoli"
