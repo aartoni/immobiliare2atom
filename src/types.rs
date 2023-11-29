@@ -231,7 +231,7 @@ pub struct RealEstateProperty {
     pub ga4_condition: Option<String>,
     pub condition: Option<String>,
     pub price: Price,
-    pub rooms: String,
+    pub rooms: Option<String>,
     #[serde(rename = "hasElevators")]
     pub has_elevators: bool,
     pub surface: String,

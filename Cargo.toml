@@ -1,6 +1,6 @@
 [package]
 name = "immobiliare2atom"
-version = "1.0.0"
+version = "1.0.1"
 edition = "2021"
 authors = ["Alessio Artoni <alessio@artoni.org>"]
 repository = "https://github.com/aartoni/immobiliare2atom/"

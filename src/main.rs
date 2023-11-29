@@ -40,7 +40,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     // Perform request
     let url = args.get(1).unwrap();
-    let response = ureq::get(&url).call()?.into_string()?;
+    let response = ureq::get(url).call()?.into_string()?;
 
     // Parse response
     let response: ImmobiliareResponse = serde_json::from_str(&response)?;
@@ -118,8 +118,9 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         // Get properties
         if let Some(properties) = result.real_estate.properties.first() {
             // Get number of rooms
-            let rooms = &properties.rooms;
-            write!(description, "<p>Locali: {rooms}</p>")?;
+            if let Some(rooms) = &properties.rooms {
+                write!(description, "<p>Locali: {rooms}</p>")?;
+            }
 
             // Get surface
             let surface = &properties.surface;
