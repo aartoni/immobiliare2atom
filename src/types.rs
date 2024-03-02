@@ -233,7 +233,7 @@ pub struct RealEstateProperty {
     pub price: Price,
     pub rooms: Option<String>,
     #[serde(rename = "hasElevators")]
-    pub has_elevators: bool,
+    pub has_elevators: Option<bool>,
     pub surface: String,
     pub surface_value: Option<String>,
     #[deprecated(since = "0.1.0", note = "please use `typology_v2` instead")]
@@ -338,7 +338,7 @@ pub struct AdvertisingAgency {
     #[serde(rename = "agencyUrl")]
     pub url: String,
     #[serde(rename = "imageUrls")]
-    pub image_urls: ImageUrls,
+    pub image_urls: Option<ImageUrls>,
     #[serde(rename = "displayName")]
     pub display_name: String,
     #[serde(rename = "bookableVisit")]
