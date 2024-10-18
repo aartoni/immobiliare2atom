@@ -218,7 +218,7 @@ pub struct RealEstateTypology {
 
 #[derive(Debug, Deserialize)]
 pub struct RealEstateProperty {
-    pub income: bool,
+    pub income: Option<bool>,
     pub multimedia: Option<Multimedia>,
     pub bathrooms: Option<String>,
     #[serde(rename = "ga4Bathrooms")]
@@ -239,7 +239,7 @@ pub struct RealEstateProperty {
     #[deprecated(since = "0.1.0", note = "please use `typology_v2` instead")]
     pub typology: RealEstateTypology,
     #[serde(rename = "typologyV2")]
-    pub typology_v2: RealEstateTypology,
+    pub typology_v2: Option<RealEstateTypology>,
     #[serde(rename = "typologyGA4Translation")]
     pub typology_ga4_translation: String,
     #[serde(rename = "ga4Features")]
