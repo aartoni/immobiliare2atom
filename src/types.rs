@@ -342,7 +342,7 @@ pub struct AdvertisingAgency {
     #[serde(rename = "displayName")]
     pub display_name: String,
     #[serde(rename = "bookableVisit")]
-    pub bookable_visit: BookableState,
+    pub bookable_visit: Option<BookableState>,
 }
 
 #[derive(Debug, Deserialize)]
