@@ -203,7 +203,7 @@ pub struct RealEstate {
 #[derive(Debug, Deserialize)]
 pub struct Price {
     pub visible: bool,
-    pub value: usize,
+    pub value: f64,
     #[serde(rename = "formattedValue")]
     pub formatted_value: String,
     #[serde(rename = "priceRange")]
