@@ -91,6 +91,8 @@ pub struct AppleItunesApp {
 
 #[derive(Debug, Deserialize)]
 pub struct FacebookSettings {
+    #[serde(rename = "searchName")]
+    pub search_name: String,
     pub prefix: String,
     pub title: String,
     pub description: String,
@@ -136,7 +138,7 @@ pub struct Breadcrumb {
     pub label: String,
     pub link: Option<Link>,
     pub links: Option<Vec<Link>>,
-    pub items: Option<Vec<ItemLink>>,
+    pub items: Option<Vec<BreadcrumbItem>>,
 }
 
 #[derive(Debug, Deserialize)]
@@ -172,9 +174,6 @@ pub struct ImmobiliareResult {
 #[derive(Debug, Deserialize)]
 pub struct ResultSeo {
     pub anchor: String,
-    pub title: String,
-    #[serde(rename = "metaTitle")]
-    pub meta_title: String,
     pub url: String,
 }
 
@@ -196,8 +195,11 @@ pub struct RealEstate {
     pub visibility: Option<String>,
     #[serde(rename = "hasMainProperty")]
     pub has_main_property: bool,
+    #[serde(rename = "isMosaic")]
+    pub is_mosaic: bool,
     #[serde(rename = "isProjectLike")]
     pub is_project_like: bool,
+    pub uuid: String,
 }
 
 #[derive(Debug, Deserialize)]
@@ -218,6 +220,9 @@ pub struct RealEstateTypology {
 
 #[derive(Debug, Deserialize)]
 pub struct RealEstateProperty {
+    pub elevator: Option<bool>,
+    #[serde(rename = "featureList")]
+    pub features: Vec<PropertyFeature>,
     pub income: Option<bool>,
     pub multimedia: Option<Multimedia>,
     pub bathrooms: Option<String>,
@@ -244,13 +249,24 @@ pub struct RealEstateProperty {
     pub typology_ga4_translation: String,
     #[serde(rename = "ga4Features")]
     pub ga4_features: Option<Vec<String>>,
+    #[serde(rename = "ga4Garage")]
+    pub ga4_garage: Option<String>,
+    #[serde(rename = "ga4Heating")]
+    pub ga4_heating: String,
     pub caption: Option<String>,
     pub category: Option<RealEstateTypology>,
     pub description: Option<String>,
     pub energy: Option<Energy>,
-    pub features: Option<Vec<String>>,
     pub photo: Photo,
     pub location: Option<Location>,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct PropertyFeature {
+    pub r#type: String,
+    pub label: String,
+    #[serde(rename = "compactLabel")]
+    pub compact_label: Option<String>,
 }
 
 #[derive(Debug, Deserialize)]
@@ -283,6 +299,8 @@ pub struct Floor {
     pub value: String,
     #[serde(rename = "ga4FloorValue")]
     pub ga4_floor_value: String,
+    #[serde(rename = "floorOnlyValue")]
+    pub floor_only_value: String,
 }
 
 #[derive(Debug, Deserialize)]
@@ -299,6 +317,7 @@ pub struct Energy {
 
 #[derive(Debug, Deserialize)]
 pub struct Location {
+    pub address: String,
     pub latitude: f64,
     pub longitude: f64,
     pub marker: String,
@@ -313,7 +332,6 @@ pub struct Location {
 pub struct Nation {
     pub id: String,
     pub name: String,
-    pub keyurl: String,
 }
 
 #[derive(Debug, Deserialize)]
@@ -326,6 +344,8 @@ pub struct Advertiser {
 
 #[derive(Debug, Deserialize)]
 pub struct AdvertisingAgency {
+    #[serde(rename = "customType")]
+    pub custom_type: Option<CustomType>,
     pub id: u64,
     pub r#type: String,
     pub phones: Vec<Phone>,
@@ -343,6 +363,18 @@ pub struct AdvertisingAgency {
     pub display_name: String,
     #[serde(rename = "bookableVisit")]
     pub bookable_visit: Option<BookableState>,
+    #[serde(rename = "showExternalLink")]
+    pub show_external_link: bool,
+    #[serde(rename = "showLogo")]
+    pub show_logo: bool,
+    #[serde(rename = "showOnlyAgentPhone")]
+    pub show_only_agent_phone: bool,
+}
+
+#[derive(Debug, Deserialize)]
+#[serde(rename_all = "lowercase")]
+pub enum CustomType {
+    Tecnomedia,
 }
 
 #[derive(Debug, Deserialize)]
@@ -388,4 +420,6 @@ pub struct Supervisor {
     pub image_url: Option<String>,
     #[serde(rename = "imageType")]
     pub image_type: String,
+    #[serde(rename = "phoneUrl")]
+    pub phone_url: Option<String>,
 }
