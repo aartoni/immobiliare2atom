@@ -5,8 +5,8 @@ pub struct ImmobiliareResponse {
     pub count: u16,
     #[serde(rename = "totalAds")]
     pub total_ads: u16,
-    #[serde(rename = "isResultLimitReached")]
-    pub is_result_limit_reached: Option<bool>,
+    #[serde(rename = "isResultsLimitReached")]
+    pub is_results_limit_reached: bool,
     pub results: Vec<ImmobiliareResult>,
     pub breadcrumbs: Vec<Breadcrumb>,
     pub agencies: Vec<Agency>,
@@ -247,8 +247,8 @@ pub struct RealEstateProperty {
     pub typology_v2: Option<RealEstateTypology>,
     #[serde(rename = "typologyGA4Translation")]
     pub typology_ga4_translation: String,
-    #[serde(rename = "ga4Features")]
-    pub ga4_features: Option<Vec<String>>,
+    #[serde(rename = "ga4features")]
+    pub ga4_features: Vec<String>,
     #[serde(rename = "ga4Garage")]
     pub ga4_garage: Option<String>,
     #[serde(rename = "ga4Heating")]
@@ -275,7 +275,8 @@ pub struct Multimedia {
     // TODO Fix this type
     #[serde(rename = "virtualTours")]
     pub virtual_tours: Vec<Option<String>>,
-    pub has_multimedia: Option<bool>,
+    #[serde(rename = "hasMultimedia")]
+    pub has_multimedia: bool,
 }
 
 #[derive(Debug, Deserialize)]
